@@ -28,14 +28,19 @@ struct Data
     float amount;
 };
 
+struct Data pegaLinha(int index)
+{
+    FILE *file;
+    file = fopen("./dataset.csv", "r");
+    // fseek
+}
+
 struct Data *datasetReduzido(int linhas)
 {
     FILE *file;
     struct Data *items = malloc(sizeof(struct Data) * linhas);
     file = fopen("./dataset.csv", "r");
     char ch;
-    char index = -1;
-    char indexStr[100] = "";
     char amountStr[100] = "";
     int adicionarEm = 0;
     float amount = 0;
@@ -49,11 +54,6 @@ struct Data *datasetReduzido(int linhas)
     do
     {
         ch = fgetc(file);
-        if (contador >= 0 && contador < 1) // esses numeros serao trocados apos o tratamento de dados
-        {
-            strncat(indexStr, &ch, 1);
-            index = atoi(indexStr);
-        }
         if (contador > 5) // esse numero sera trocado apos o tratamento de dados
         {
             if (ch != ',')
@@ -73,7 +73,7 @@ struct Data *datasetReduzido(int linhas)
             }
             struct Data lineData;
             lineData.amount = amount;
-            lineData.index = index;
+            lineData.index = linha;
             items[adicionarEm] = lineData;
             adicionarEm++;
             linha++;
@@ -83,10 +83,6 @@ struct Data *datasetReduzido(int linhas)
             //     break;
             // }
             int i = 0;
-            for (i = 0; i < 5; i++)
-            {
-                indexStr[i] = '\000';
-            }
             for (i = 0; i < 10; i++)
             {
                 amountStr[i] = '\000';
@@ -100,11 +96,16 @@ struct Data *datasetReduzido(int linhas)
 
 int main()
 {
-    struct Data *items = datasetReduzido(128975);
-    printf("////////////////////////////////////////////////////////////////////\n LEU TUDO VAI IMPRIMIR //////////////////////////////////////////////////////////////////////////\n");
-    for (int i = 0; i < 128975; i++)
+    int linhas = 128975;
+    struct Data *items = datasetReduzido(linhas);
+    for (int i = 0; i < linhas; i++)
     {
-        printf("index: %d, amount: %.2f\n", items[i].index, items[i].amount);
+        printf("linha: %d, amount: %.2f\n", items[i].index, items[i].amount);
     }
+
+    // quicck no items
+
+    // de items gerar saida
+
     return 0;
 }
