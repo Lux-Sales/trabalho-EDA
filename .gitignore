@@ -1,3 +1,5 @@
 /.vscode
 .~lock.dataset.csv#
 Amazon_Sale_Report.csv
+.~lock.dataset_formatado
+.~lock.dataset_formatado.csv#
