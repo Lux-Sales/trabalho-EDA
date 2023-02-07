@@ -2,7 +2,7 @@ import csv
 
 def process_row(row):
     # Preencher cada linha com asteriscos até 20 caracteres
-    row = [content.ljust(20, '*') for content in row]
+    row = [content.ljust(19, '*') for content in row]
     return row
 
 # Abrir arquivo CSV de entrada para leitura

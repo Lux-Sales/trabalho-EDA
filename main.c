@@ -31,15 +31,28 @@ struct Data
 struct Data pegaLinha(int index)
 {
     FILE *file;
-    file = fopen("./dataset.csv", "r");
-    // fseek
+    char linha[100];
+    file = fopen("./dataset_formatado.csv", "r");
+    if (file == NULL)
+    {
+        printf("error opening file");
+    }
+    fseek(file, (index - 1) * 41, SEEK_SET);
+    if (fgets(linha, 100, file) == NULL)
+    {
+        printf("error reading line\n");
+    }
+    else
+    {
+        printf("linha %s\n", linha);
+    }
 }
 
 struct Data *datasetReduzido(int linhas)
 {
     FILE *file;
     struct Data *items = malloc(sizeof(struct Data) * linhas);
-    file = fopen("./dataset.csv", "r");
+    file = fopen("./dataset_formatado.csv", "r");
     char ch;
     char amountStr[100] = "";
     int adicionarEm = 0;
@@ -54,9 +67,9 @@ struct Data *datasetReduzido(int linhas)
     do
     {
         ch = fgetc(file);
-        if (contador > 5) // esse numero sera trocado apos o tratamento de dados
+        if (contador > 20) // esse numero sera trocado apos o tratamento de dados
         {
-            if (ch != ',')
+            if (ch != ',' && ch != '*')
             {
                 strncat(amountStr, &ch, 1);
                 amount = atof(amountStr);
@@ -96,13 +109,14 @@ struct Data *datasetReduzido(int linhas)
 
 int main()
 {
-    int linhas = 128975;
-    struct Data *items = datasetReduzido(linhas);
-    for (int i = 0; i < linhas; i++)
-    {
-        printf("linha: %d, amount: %.2f\n", items[i].index, items[i].amount);
-    }
+    // int linhas = 129000;
+    // struct Data *items = datasetReduzido(linhas);
+    // for (int i = 0; i < linhas; i++)
+    // {
+    //     printf("linha: %d, amount: %.2f\n", items[i].index, items[i].amount);
+    // }
 
+    pegaLinha(5);
     // quicck no items
 
     // de items gerar saida
