@@ -3,37 +3,16 @@
 #include <string.h>
 #include <time.h>
 
-/*
-O que precisamos?
-
-fora do codigo:
-
-1 - tratar dataset para que todos os dados tenham o mesmo tamanho, para que a gente
-consiga buscar depois da ordenação os amountes.
-2 - Calcular complexidade computacional do algoritmo
-
-
-dentro do codigo:
-
-1 - Fazer função que pega x linhas aleatórias e cria um dataset para testarmos com um
-dataset reduzido
-2 - Ler dataset e fazer vetor de structs
-3 - Ordenar de forma decrescente com quick sort utilizando o campo amount do dataset.
-4 - Escrever em um arquivo esse vetor ordenado
-5 - Calcular tempo de processamento
-*/
-
 struct Data
 {
     int index;
     float amount;
 };
 
-struct Data *datasetReduzido()
+int lerDataSet(struct Data *items)
 {
     FILE *file;
     file = fopen("./dataset_formatado.csv", "r");
-    struct Data *Datas = malloc(sizeof(struct Data) * 128975);
     char ch;
     char amountStr[100] = "";
     int adicionarEm = 0;
@@ -52,7 +31,7 @@ struct Data *datasetReduzido()
         {
             break;
         }
-        if (contador > 19) // esse numero sera trocado apos o tratamento de dados
+        if (contador > 19)
         {
             if (ch != ',' && ch != '*')
             {
@@ -62,20 +41,12 @@ struct Data *datasetReduzido()
         }
         if (ch == '\n')
         {
-            // leu a linha inteira, adiciona no vetor de structs {index, amount}
-            // limpa os vetores também
-            // printf("linha: %d, index: %d, amount:%.2f\n", linha, index, amount);
             struct Data lineData;
             lineData.amount = amount;
             lineData.index = linha;
-            Datas[adicionarEm] = lineData;
+            items[adicionarEm] = lineData;
             adicionarEm++;
             linha++;
-            // if (linha >= 128976)
-            // { // EOF nao funcionando, ver isso hj
-
-            //     break;
-            // }
             int i = 0;
             for (i = 0; i < 10; i++)
             {
@@ -85,7 +56,8 @@ struct Data *datasetReduzido()
         }
         contador++;
     } while (ch != EOF);
-    return Datas;
+    fclose(file);
+    return 0;
 }
 
 // Funcao para comparar duas structs
@@ -133,8 +105,42 @@ void QuickSort(struct Data *v, int l, int r)
     }
 }
 
+int escreveResultado(struct Data *items, int length, FILE *file, FILE *saida)
+{
+    int i;
+    int j;
+    for (i = 0; i < length; i++)
+    {
+        fseek(file, (items[i].index * 41), SEEK_SET);
+        char ch;
+        char categoria[20] = "";
+        do
+        {
+            ch = fgetc(file);
+            if (ch != '*')
+                strncat(categoria, &ch, 1);
+
+        } while (ch != '*' && ch != EOF);
+        fprintf(saida, "linha: %d, categoria: %s, valor: %.2f\n", items[i].index, categoria, items[i].amount);
+        for (j = 0; j < 20; j++)
+        {
+            categoria[j] = '\000';
+        }
+    }
+}
+
 int main()
 {
+    FILE *file, *saida;
+    file = fopen("./dataset_formatado.csv", "r");
+    saida = fopen("./dataset_saida.txt", "w");
+
+    if (file == NULL || saida == NULL)
+    {
+        printf("Error opening files");
+        exit(1);
+    }
+
     // int linhas = 128975;
     // struct Data *Datas = datasetReduzido(linhas);
     // for (int i = 0; i < linhas; i++)
@@ -144,29 +150,32 @@ int main()
     clock_t start, end, open_time, alloc_time, quicksort_time;
 
     start = clock();
-    FILE *file;
     open_time = clock();
     file = fopen("./dataset_formatado.csv", "r");
     open_time = clock() - open_time;
-    double time_to_open = ((double)open_time)/CLOCKS_PER_SEC;
+    double time_to_open = ((double)open_time) / CLOCKS_PER_SEC;
 
     alloc_time = clock();
+
     fseek(file, 0, SEEK_END);
     int n = ftell(file) / 41;
-    printf("%d", n);
     struct Data *items = malloc(sizeof(struct Data) * n);
-    items = datasetReduzido();
+    lerDataSet(items);
+
     alloc_time = clock() - alloc_time;
-    double time_to_alloc = ((double)alloc_time)/CLOCKS_PER_SEC;
+    double time_to_alloc = ((double)alloc_time) / CLOCKS_PER_SEC;
 
     quicksort_time = clock();
     QuickSort(items, 0, n - 1);
     quicksort_time = clock() - quicksort_time;
-    double time_to_sort =((double)quicksort_time)/CLOCKS_PER_SEC;
+    double time_to_sort = ((double)quicksort_time) / CLOCKS_PER_SEC;
+    escreveResultado(items, n, file, saida);
 
-    int i;
     end = clock();
-    double duration = ((double)end - start)/CLOCKS_PER_SEC;
+    fclose(file);
+    fclose(saida);
+    free(items);
+    double duration = ((double)end - start) / CLOCKS_PER_SEC;
     printf("\nTempo de carregamento do arquivo: %f", time_to_open);
     printf("\nTempo de alocação: %f", time_to_alloc);
     printf("\nTempo de ordenação: %f", time_to_sort);
