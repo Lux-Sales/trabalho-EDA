@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 /*
 O que precisamos?
@@ -140,16 +141,36 @@ int main()
     // {
     //     printf("linha: %d, amount: %.2f\n", Datas[i].index, Datas[i].amount);
     // }
+    clock_t start, end, open_time, alloc_time, quicksort_time;
 
+    start = clock();
     FILE *file;
+    open_time = clock();
     file = fopen("./dataset_formatado.csv", "r");
+    open_time = clock() - open_time;
+    double time_to_open = ((double)open_time)/CLOCKS_PER_SEC;
+
+    alloc_time = clock();
     fseek(file, 0, SEEK_END);
     int n = ftell(file) / 41;
     printf("%d", n);
     struct Data *items = malloc(sizeof(struct Data) * n);
     items = datasetReduzido();
+    alloc_time = clock() - alloc_time;
+    double time_to_alloc = ((double)alloc_time)/CLOCKS_PER_SEC;
+
+    quicksort_time = clock();
     QuickSort(items, 0, n - 1);
+    quicksort_time = clock() - quicksort_time;
+    double time_to_sort =((double)quicksort_time)/CLOCKS_PER_SEC;
+
     int i;
+    end = clock();
+    double duration = ((double)end - start)/CLOCKS_PER_SEC;
+    printf("\nTempo de carregamento do arquivo: %f", time_to_open);
+    printf("\nTempo de alocação: %f", time_to_alloc);
+    printf("\nTempo de ordenação: %f", time_to_sort);
+    printf("\nTempo de execução do programa em segundos : %f", duration);
     // de Datas gerar saida
 
     return 0;
