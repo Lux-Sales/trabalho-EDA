@@ -33,6 +33,8 @@ int retornaItens(int linha, Amazon *itens){
         i++;
     }
 
+    printf("linha = %i, valor = %f\n", 99, itens[99].amount);
+
     fclose(file);
     return 0;
 }
@@ -45,7 +47,7 @@ int main(){
     
     retornaItens(50, itens);
 
-    //printf("linha = %i, valor = %f\n", i, itens[i].amount);
+    printf("linha = %i, valor = %f\n", i, itens[i].amount);
 
     return 0;
 }
