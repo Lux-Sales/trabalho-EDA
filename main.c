@@ -2,37 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-O que precisamos?
-
-fora do codigo:
-
-1 - tratar dataset para que todos os dados tenham o mesmo tamanho, para que a gente
-consiga buscar depois da ordenação os amountes.
-2 - Calcular complexidade computacional do algoritmo
-
-
-dentro do codigo:
-
-1 - Fazer função que pega x linhas aleatórias e cria um dataset para testarmos com um
-dataset reduzido
-2 - Ler dataset e fazer vetor de structs
-3 - Ordenar de forma decrescente com quick sort utilizando o campo amount do dataset.
-4 - Escrever em um arquivo esse vetor ordenado
-5 - Calcular tempo de processamento
-*/
-
 struct Data
 {
     int index;
     float amount;
 };
 
-struct Data *datasetReduzido()
+int lerDataSet(struct Data *items)
 {
     FILE *file;
     file = fopen("./dataset_formatado.csv", "r");
-    struct Data *Datas = malloc(sizeof(struct Data) * 128975);
     char ch;
     char amountStr[100] = "";
     int adicionarEm = 0;
@@ -64,7 +43,7 @@ struct Data *datasetReduzido()
             struct Data lineData;
             lineData.amount = amount;
             lineData.index = linha;
-            Datas[adicionarEm] = lineData;
+            items[adicionarEm] = lineData;
             adicionarEm++;
             linha++;
             int i = 0;
@@ -76,7 +55,8 @@ struct Data *datasetReduzido()
         }
         contador++;
     } while (ch != EOF);
-    return Datas;
+    fclose(file);
+    return 0;
 }
 
 // Funcao para comparar duas structs
@@ -163,10 +143,12 @@ int main()
     fseek(file, 0, SEEK_END);
     int n = ftell(file) / 41;
     struct Data *items = malloc(sizeof(struct Data) * n);
-    items = datasetReduzido();
+    lerDataSet(items);
     QuickSort(items, 0, n - 1);
-    int i;
     escreveResultado(items, n, file, saida);
+    fclose(file);
+    fclose(saida);
+    free(items);
 
     return 0;
 }
