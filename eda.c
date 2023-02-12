@@ -50,11 +50,7 @@ int main()
 
     retornaItens(50, itens);
 
-<<<<<<< HEAD
-    // printf("linha = %i, valor = %f\n", i, itens[i].amount);
-=======
     printf("linha = %i, valor = %f\n", i, itens[i].amount);
->>>>>>> d7472814905beeb9a905ab0516805ade5afcd147
 
     return 0;
 }

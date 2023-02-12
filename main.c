@@ -150,10 +150,6 @@ int main()
     items = datasetReduzido();
     QuickSort(items, 0, n - 1);
     int i;
-    for (i = 0; i < n; i++)
-    {
-        printf("linha: %d, %.2f\n", items[i].index, items[i].amount);
-    }
     // de Datas gerar saida
 
     return 0;
