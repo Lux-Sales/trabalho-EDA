@@ -8,7 +8,7 @@ O que precisamos?
 fora do codigo:
 
 1 - tratar dataset para que todos os dados tenham o mesmo tamanho, para que a gente
-consiga buscar depois da ordenação os valores.
+consiga buscar depois da ordenação os amountes.
 2 - Calcular complexidade computacional do algoritmo
 
 
@@ -22,23 +22,23 @@ dataset reduzido
 5 - Calcular tempo de processamento
 */
 
-typedef struct
+struct Data
 {
     int index;
     float amount;
-} Data;
+};
 
-struct Data *datasetReduzido(int linhas)
+struct Data *datasetReduzido()
 {
     FILE *file;
-    struct Data *items = malloc(sizeof(Data) * linhas);
-    file = fopen("./dataset.csv", "r");
+    file = fopen("./dataset_formatado.csv", "r");
+    struct Data *Datas = malloc(sizeof(struct Data) * 128975);
     char ch;
-    char index = -1;
-    char indexStr[100] = "";
     char amountStr[100] = "";
+    int adicionarEm = 0;
     float amount = 0;
     int contador = 0;
+    int linha = 1;
     if (file == NULL)
     {
         printf("error opening file");
@@ -47,14 +47,13 @@ struct Data *datasetReduzido(int linhas)
     do
     {
         ch = fgetc(file);
-        if (contador >= 0 && contador < 1) // esses numeros serao trocados apos o tratamento de dados
+        if (ch == '\377')
         {
-            strncat(indexStr, &ch, 1);
-            index = atoi(indexStr);
+            break;
         }
-        if (contador > 5) // esse numero sera trocado apos o tratamento de dados
+        if (contador > 19) // esse numero sera trocado apos o tratamento de dados
         {
-            if (ch != ",")
+            if (ch != ',' && ch != '*')
             {
                 strncat(amountStr, &ch, 1);
                 amount = atof(amountStr);
@@ -62,12 +61,21 @@ struct Data *datasetReduzido(int linhas)
         }
         if (ch == '\n')
         {
-            printf("index: %d, amount:%.2f\n", index, amount);
+            // leu a linha inteira, adiciona no vetor de structs {index, amount}
+            // limpa os vetores também
+            // printf("linha: %d, index: %d, amount:%.2f\n", linha, index, amount);
+            struct Data lineData;
+            lineData.amount = amount;
+            lineData.index = linha;
+            Datas[adicionarEm] = lineData;
+            adicionarEm++;
+            linha++;
+            // if (linha >= 128976)
+            // { // EOF nao funcionando, ver isso hj
+
+            //     break;
+            // }
             int i = 0;
-            for (i = 0; i < 5; i++)
-            {
-                indexStr[i] = '\000';
-            }
             for (i = 0; i < 10; i++)
             {
                 amountStr[i] = '\000';
@@ -76,10 +84,73 @@ struct Data *datasetReduzido(int linhas)
         }
         contador++;
     } while (ch != EOF);
+    return Datas;
+}
+
+// Funcao para comparar duas structs
+int compare(const void *a, const void *b)
+{
+    struct Data *ia = (struct Data *)a;
+    struct Data *ib = (struct Data *)b;
+    return (ib->amount - ia->amount);
+}
+
+// QuickSort
+void QuickSort(struct Data *v, int l, int r)
+{
+    int i, j;
+    struct Data x, w;
+    i = l;
+    j = r;
+    x = v[(l + r) / 2];
+    do
+    {
+        while (v[i].amount > x.amount && i < r)
+        {
+            i++;
+        }
+        while (v[j].amount < x.amount && j > l)
+        {
+            j--;
+        }
+        if (i <= j)
+        {
+            w = v[i];
+            v[i] = v[j];
+            v[j] = w;
+            i++;
+            j--;
+        }
+    } while (i <= j);
+    if (l < j)
+    {
+        QuickSort(v, l, j);
+    }
+    if (i < r)
+    {
+        QuickSort(v, i, r);
+    }
 }
 
 int main()
 {
-    datasetReduzido(2);
+    // int linhas = 128975;
+    // struct Data *Datas = datasetReduzido(linhas);
+    // for (int i = 0; i < linhas; i++)
+    // {
+    //     printf("linha: %d, amount: %.2f\n", Datas[i].index, Datas[i].amount);
+    // }
+
+    FILE *file;
+    file = fopen("./dataset_formatado.csv", "r");
+    fseek(file, 0, SEEK_END);
+    int n = ftell(file) / 41;
+    printf("%d", n);
+    struct Data *items = malloc(sizeof(struct Data) * n);
+    items = datasetReduzido();
+    QuickSort(items, 0, n - 1);
+    int i;
+    // de Datas gerar saida
+
     return 0;
 }
