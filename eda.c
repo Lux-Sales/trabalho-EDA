@@ -4,50 +4,54 @@
 
  typedef struct
 {
-    int id;
-    char category[100];
     double amount;
 } Amazon;
 
-Amazon itens[10];
 
-int retornaItens(int linhas){
+int retornaItens(int linha, Amazon *itens){
     FILE *file;
 
-    file = fopen("teste.csv", "r");
+    file = fopen("dataset_formatado.csv", "r");
 
     if (file == NULL){
     printf("Arquivo não encontrado.\n");
     return 0;
     }
 
-    char *buffer = malloc(sizeof(linhas));
-    int i = 0;
-    char *field = NULL;
+    char *buffer = malloc(sizeof(linha)); //precisa do sizeof? e seria amazon ou linha?
+    int i = 1;
+    char *field;
 
-    while(fgets(buffer, linhas, file)){
-        if ((strlen(buffer)>0) && (buffer[strlen (buffer) - 1] == '\n'))
-            buffer[strlen (buffer) - 1] = '\0';
+    while(fgets(buffer, linha, file)){
 
-        field = strtok(buffer, ";");
-        itens[i].id = atoi(field? field:"");
-        field = strtok(NULL, ";");
-        strcpy(itens[i].category, (field?:""));
-        field = strtok(NULL, ";");
-        itens[i].amount = atoi(field?:"");
 
-        printf("id = %i, categoria = %s, valor = %i\n", itens[i].id, itens[i].category, itens[i].amount);
+        field = strtok(buffer, ",");
+  
+        field = strtok(NULL, ",");
+        itens[i].amount = (field? atof(field): 0.0);
+
+        //printf("linha = %i, valor = %f\n", i, itens[i].amount);
         i++;
-
     }
 
     fclose(file);
     return 0;
 }
 
-int main()
-{   
-    retornaItens(10);
+int main(){  
+     
+    Amazon *itens = malloc(sizeof(Amazon) * 1100);
+
+    int i=5;
+    retornaItens(50, itens);
+
+    //for (i = 0; i <= sizeof(itens); i++){
+
+    printf("linha = %i, valor = %f\n", i, itens[i].amount);
+
+    //}
+
     return 0;
 }
+
 
