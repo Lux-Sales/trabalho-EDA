@@ -51,7 +51,7 @@ struct Data *datasetReduzido()
         {
             break;
         }
-        if (contador > 19) // esse numero sera trocado apos o tratamento de dados
+        if (contador > 19)
         {
             if (ch != ',' && ch != '*')
             {
@@ -61,20 +61,12 @@ struct Data *datasetReduzido()
         }
         if (ch == '\n')
         {
-            // leu a linha inteira, adiciona no vetor de structs {index, amount}
-            // limpa os vetores também
-            // printf("linha: %d, index: %d, amount:%.2f\n", linha, index, amount);
             struct Data lineData;
             lineData.amount = amount;
             lineData.index = linha;
             Datas[adicionarEm] = lineData;
             adicionarEm++;
             linha++;
-            // if (linha >= 128976)
-            // { // EOF nao funcionando, ver isso hj
-
-            //     break;
-            // }
             int i = 0;
             for (i = 0; i < 10; i++)
             {
@@ -132,25 +124,49 @@ void QuickSort(struct Data *v, int l, int r)
     }
 }
 
+int escreveResultado(struct Data *items, int length, FILE *file, FILE *saida)
+{
+    int i;
+    int j;
+    for (i = 0; i < length; i++)
+    {
+        fseek(file, (items[i].index * 41), SEEK_SET);
+        char ch;
+        char categoria[20] = "";
+        do
+        {
+            ch = fgetc(file);
+            if (ch != '*')
+                strncat(categoria, &ch, 1);
+
+        } while (ch != '*' && ch != EOF);
+        fprintf(saida, "linha: %d, categoria: %s, valor: %.2f\n", items[i].index, categoria, items[i].amount);
+        for (j = 0; j < 20; j++)
+        {
+            categoria[j] = '\000';
+        }
+    }
+}
+
 int main()
 {
-    // int linhas = 128975;
-    // struct Data *Datas = datasetReduzido(linhas);
-    // for (int i = 0; i < linhas; i++)
-    // {
-    //     printf("linha: %d, amount: %.2f\n", Datas[i].index, Datas[i].amount);
-    // }
-
-    FILE *file;
+    FILE *file, *saida;
     file = fopen("./dataset_formatado.csv", "r");
+    saida = fopen("./dataset_saida.txt", "w");
+
+    if (file == NULL || saida == NULL)
+    {
+        printf("Error opening files");
+        exit(1);
+    }
+
     fseek(file, 0, SEEK_END);
     int n = ftell(file) / 41;
-    printf("%d", n);
     struct Data *items = malloc(sizeof(struct Data) * n);
     items = datasetReduzido();
     QuickSort(items, 0, n - 1);
     int i;
-    // de Datas gerar saida
+    escreveResultado(items, n, file, saida);
 
     return 0;
 }
