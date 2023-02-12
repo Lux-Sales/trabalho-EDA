@@ -24,11 +24,10 @@ int retornaItens(int linha, Amazon *itens){
 
     while(fgets(buffer, linha, file)){
 
-
         field = strtok(buffer, ",");
   
         field = strtok(NULL, ",");
-        itens[i].amount = (field? atof(field): 0.0);
+        itens[i].amount = atof(field);
 
         //printf("linha = %i, valor = %f\n", i, itens[i].amount);
         i++;
@@ -40,16 +39,13 @@ int retornaItens(int linha, Amazon *itens){
 
 int main(){  
      
-    Amazon *itens = malloc(sizeof(Amazon) * 1100);
+    Amazon *itens = malloc(sizeof(Amazon) * 1100000);
 
-    int i=5;
+    int i=1200;
+    
     retornaItens(50, itens);
 
-    //for (i = 0; i <= sizeof(itens); i++){
-
-    printf("linha = %i, valor = %f\n", i, itens[i].amount);
-
-    //}
+    //printf("linha = %i, valor = %f\n", i, itens[i].amount);
 
     return 0;
 }
