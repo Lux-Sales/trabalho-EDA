@@ -2,52 +2,52 @@
 #include <stdlib.h>
 #include <string.h>
 
- typedef struct
+typedef struct
 {
     double amount;
 } Amazon;
 
-
-int retornaItens(int linha, Amazon *itens){
+int retornaItens(int linha, Amazon *itens)
+{
     FILE *file;
 
     file = fopen("dataset_formatado.csv", "r");
 
-    if (file == NULL){
-    printf("Arquivo não encontrado.\n");
-    return 0;
+    if (file == NULL)
+    {
+        printf("Arquivo não encontrado.\n");
+        return 0;
     }
 
-    char *buffer = malloc(sizeof(linha)); //precisa do sizeof? e seria amazon ou linha?
+    char *buffer = malloc(sizeof(linha)); // precisa do sizeof? e seria amazon ou linha?
     int i = 1;
     char *field;
 
-    while(fgets(buffer, linha, file)){
+    while (fgets(buffer, linha, file))
+    {
 
         field = strtok(buffer, ",");
-  
+
         field = strtok(NULL, ",");
         itens[i].amount = atof(field);
 
-        //printf("linha = %i, valor = %f\n", i, itens[i].amount);
+        // printf("linha = %i, valor = %f\n", i, itens[i].amount);
         i++;
     }
-
     fclose(file);
     return 0;
 }
 
-int main(){  
-     
+int main()
+{
+
     Amazon *itens = malloc(sizeof(Amazon) * 1100000);
 
-    int i=1200;
-    
+    int i = 1200;
+
     retornaItens(50, itens);
 
-    //printf("linha = %i, valor = %f\n", i, itens[i].amount);
+    // printf("linha = %i, valor = %f\n", i, itens[i].amount);
 
     return 0;
 }
-
-
